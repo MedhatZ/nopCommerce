@@ -1,6 +1,22 @@
 # nopCommerce Calculator Bridge — Demo
 
-Runnable proof of a nopCommerce product-page calculator: admin setup, the customer widget, and the cart. The server computes the quantity from stored coverage and the posted room size.
+## Product Calculator plugin
+
+The runnable plugin is `src/Plugins/Nop.Plugin.Widgets.ProductCalculator` inside nopCommerce 4.90. It does not modify core projects.
+
+- Product page widget: Room Calculator under the product overview.
+- Admin: Configuration > Product Calculator.
+- `POST /ProductCalculator/AddToCart` accepts `productId`, `length`, and `width`. Quantity is computed with `decimal` and `Math.Ceiling`.
+- Pack formula tests live in `src/Tests/Nop.Plugin.Widgets.ProductCalculator.Tests`.
+
+```bash
+dotnet test src/Tests/Nop.Plugin.Widgets.ProductCalculator.Tests/Nop.Plugin.Widgets.ProductCalculator.Tests.csproj
+dotnet build src/NopCommerce.sln
+```
+
+Build the solution, then in Admin > Configuration > Local plugins install **Product Calculator**. The install step turns the widget on. Open a product page, enter length and width, and use Calculate, then Add Calculated Items To Cart.
+
+The earlier standalone demo is still described below.
 
 ## Demo purpose
 
@@ -22,13 +38,13 @@ The sample walkthrough uses Oak Flooring Pack (`productId` 100), a 5 m × 4 m ro
 Requires the .NET 9 SDK.
 
 ```bash
-dotnet test
+dotnet test src/CalculatorBridge.Demo.Tests/CalculatorBridge.Demo.Tests.csproj
 dotnet run --project src/CalculatorBridge.Demo
 ```
 
 Open http://localhost:5080 and sign in with the demo account.
 
-`dotnet test` checks the sample calculation and the invalid-dimension response against the real endpoint.
+That test checks the standalone demo endpoint.
 
 ## Architecture overview
 
