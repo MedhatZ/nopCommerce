@@ -1,0 +1,75 @@
+@model Nop.Plugin.Widgets.ProductCalculator.Models.CalculatorWidgetModel
+@using Nop.Plugin.Widgets.ProductCalculator
+
+<div class="product-calculator" data-product-id="@Model.ProductId"
+     data-calculate-url="@Url.RouteUrl(ProductCalculatorDefaults.CalculateRouteName)"
+     data-add-url="@Url.RouteUrl(ProductCalculatorDefaults.AddToCartRouteName)">
+    <h3>Room Calculator</h3>
+    <div class="form-group">
+        <label>Length</label>
+        <input type="number" step="any" class="calc-length" />
+    </div>
+    <div class="form-group">
+        <label>Width</label>
+        <input type="number" step="any" class="calc-width" />
+    </div>
+    <div class="form-group">
+        <label>Coverage per pack</label>
+        <input type="text" class="calc-coverage" value="@Model.Coverage" readonly />
+    </div>
+    <button type="button" class="button-1 calc-quote">Calculate</button>
+    <p>Required Packs: <strong class="calc-packs"></strong></p>
+    <button type="button" class="button-1 calc-add">Add Calculated Items To Cart</button>
+    @if (!string.IsNullOrEmpty(Model.LinkedProductName))
+    {
+        <p class="calc-linked">Linked product: @Model.LinkedProductName</p>
+    }
+    <p class="calc-message"></p>
+</div>
+<script>
+    (function () {
+        if (window.productCalculatorReady)
+            return;
+        window.productCalculatorReady = true;
+
+        document.addEventListener("click", function (event) {
+            var quote = event.target.closest(".calc-quote");
+            var add = event.target.closest(".calc-add");
+            if (!quote && !add)
+                return;
+
+            var root = event.target.closest(".product-calculator");
+            var lengthValue = root.querySelector(".calc-length").value;
+            var widthValue = root.querySelector(".calc-width").value;
+            var body = {
+                productId: Number(root.dataset.productId),
+                length: lengthValue === "" ? null : Number(lengthValue),
+                width: widthValue === "" ? null : Number(widthValue)
+            };
+            var token = document.querySelector("#product-details-form input[name='__RequestVerificationToken']");
+
+            fetch(add ? root.dataset.addUrl : root.dataset.calculateUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "RequestVerificationToken": token ? token.value : ""
+                },
+                body: JSON.stringify(body)
+            }).then(function (response) {
+                return response.json().then(function (data) {
+                    return { ok: response.ok, data: data };
+                });
+            }).then(function (result) {
+                var message = root.querySelector(".calc-message");
+                if (!result.ok) {
+                    root.querySelector(".calc-packs").textContent = "";
+                    message.textContent = result.data.error || "Request failed";
+                    return;
+                }
+
+                root.querySelector(".calc-packs").textContent = result.data.packs;
+                message.textContent = add ? "Added to cart" : "";
+            });
+        });
+    })();
+</script>

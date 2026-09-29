@@ -1,0 +1,58 @@
+@model Nop.Plugin.Widgets.ProductCalculator.Models.ConfigurationModel
+@{
+    Layout = "_ConfigurePlugin";
+}
+
+@await Component.InvokeAsync(typeof(StoreScopeConfigurationViewComponent))
+
+<form asp-controller="ProductCalculator" asp-action="Configure" method="post">
+    <div class="cards-group">
+        <div class="card card-default">
+            <div class="card-body">
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="EnableCalculator_OverrideForStore" asp-input="EnableCalculator" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="EnableCalculator" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="EnableCalculator" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="CalculatorTypeId_OverrideForStore" asp-input="CalculatorTypeId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="CalculatorTypeId" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="CalculatorTypeId" asp-items="Model.AvailableCalculatorTypes" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="Coverage_OverrideForStore" asp-input="Coverage" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="Coverage" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-editor asp-for="Coverage" />
+                        <span asp-validation-for="Coverage"></span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-3">
+                        <nop-override-store-checkbox asp-for="LinkedProductId_OverrideForStore" asp-input="LinkedProductId" asp-store-scope="@Model.ActiveStoreScopeConfiguration" />
+                        <nop-label asp-for="LinkedProductId" />
+                    </div>
+                    <div class="col-md-9">
+                        <nop-select asp-for="LinkedProductId" asp-items="Model.AvailableProducts" />
+                        <span class="form-text-row">@T("Plugins.Widgets.ProductCalculator.LinkedProduct.Hint")</span>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-md-9 offset-md-3">
+                        <button type="submit" name="save" class="btn btn-primary">@T("Admin.Common.Save")</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
