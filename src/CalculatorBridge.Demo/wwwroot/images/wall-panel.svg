@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img">
+  <title>Wall panels</title>
+  <rect width="800" height="800" fill="#efe7dc"/>
+  <rect x="36" y="36" width="220" height="728" rx="6" fill="#c4a27a"/>
+  <rect x="276" y="36" width="220" height="728" rx="6" fill="#b8926a"/>
+  <rect x="516" y="36" width="248" height="728" rx="6" fill="#d4b48c"/>
+  <g fill="none" stroke="#7c5a3a" stroke-width="3" opacity="0.3">
+    <path d="M70 80v640M150 110v580M320 80v640M400 140v520M560 90v600M680 120v560"/>
+  </g>
+</svg>

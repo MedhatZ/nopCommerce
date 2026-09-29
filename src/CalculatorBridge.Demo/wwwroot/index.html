@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Calculator Bridge Demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,650&family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/demo.css">
+</head>
+<body>
+  <section id="login-screen">
+    <form id="login-form" class="login-card">
+      <p class="eyebrow">nopCommerce plugin demo</p>
+      <h1>Calculator Bridge</h1>
+      <p class="lede">Sign in to walk the flooring calculator: admin setup, server-side quantity, and the cart.</p>
+      <label>
+        Username
+        <input id="username" name="username" autocomplete="username" value="demo@nopdemo.com" required>
+      </label>
+      <label>
+        Password
+        <input id="password" name="password" type="password" autocomplete="current-password" value="demo123" required>
+      </label>
+      <p id="login-error" class="banner error" hidden></p>
+      <button type="submit">Sign in</button>
+      <p class="hint">Demo account: demo@nopdemo.com / demo123</p>
+    </form>
+  </section>
+
+  <div id="app" hidden>
+    <aside>
+      <div class="brand">
+        <p class="eyebrow">Plugin demo</p>
+        <strong>Calculator Bridge</strong>
+      </div>
+      <nav id="nav">
+        <button type="button" class="nav-btn" data-view="dashboard">2 · Products</button>
+        <button type="button" class="nav-btn" data-view="configure">3 · Configuration</button>
+        <button type="button" class="nav-btn" data-view="product">4 · Product page</button>
+        <button type="button" class="nav-btn" data-view="api">5 · Calculation API</button>
+        <button type="button" class="nav-btn" data-view="cart">6 · Cart</button>
+        <button type="button" class="nav-btn" data-view="settings">7 · Multi-store</button>
+        <button type="button" class="nav-btn" data-view="validation">8 · Validation</button>
+        <button type="button" class="nav-btn" data-view="architecture">9 · Architecture</button>
+      </nav>
+      <div class="aside-foot">
+        <span id="signed-in"></span>
+        <button type="button" id="logout">Sign out</button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <p class="eyebrow">1 · Signed in</p>
+        <h1 id="view-title">Admin Dashboard</h1>
+      </header>
+
+      <section id="view-dashboard" class="view">
+        <p class="lede">Products the calculator can sell. Accessory rows are pulled in by a quantity rule.</p>
+        <div class="card table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Type</th>
+                <th>Calculator</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="product-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-configure" class="view" hidden>
+        <div id="config-accessory" class="card notice" hidden>
+          <h2 id="accessory-name">Adhesive</h2>
+          <p>This product is a linked accessory. The flooring calculator adds it when the quantity rule says so. It does not run its own calculator.</p>
+        </div>
+        <form id="config-form" class="card form-grid" hidden>
+          <div class="form-head">
+            <h2 id="config-name">Oak Flooring Pack</h2>
+            <p id="config-id" class="hint"></p>
+          </div>
+          <label>
+            Calculator Type
+            <select id="config-calculator" required></select>
+          </label>
+          <label>
+            Coverage Per Pack
+            <span class="inline-field">
+              <input id="config-coverage" type="number" min="0.1" step="0.1" required>
+              <span>m²</span>
+            </span>
+          </label>
+          <label>
+            Minimum Quantity
+            <input id="config-min" type="number" min="1" step="1" required>
+          </label>
+          <label class="check">
+            <input id="config-enable" type="checkbox">
+            Enable Calculator
+          </label>
+          <fieldset>
+            <legend>Linked Products</legend>
+            <label>
+              Accessory
+              <select id="config-linked"></select>
+            </label>
+            <div id="config-rule">
+              <span class="field-label">Quantity Rule</span>
+              <p class="rule">
+                <input id="config-linked-qty" type="number" min="1" step="1" value="1">
+                <span id="config-linked-unit">bucket</span>
+                per
+                <input id="config-linked-per" type="number" min="1" step="1" value="10">
+                <span id="config-primary-unit">packs</span>
+              </p>
+              <p id="config-rule-preview" class="hint"></p>
+            </div>
+          </fieldset>
+          <p id="config-message" class="banner" hidden></p>
+          <button type="submit">Save Configuration</button>
+        </form>
+      </section>
+
+      <section id="view-product" class="view" hidden>
+        <div class="product-toolbar">
+          <label>
+            Product
+            <select id="product-picker"></select>
+          </label>
+          <label>
+            Store
+            <select id="store-picker"></select>
+          </label>
+        </div>
+        <div id="product-disabled" class="card notice" hidden></div>
+        <div id="product-layout" class="product-layout">
+          <article class="product-hero card">
+            <img id="product-image" src="images/oak-floor.svg" alt="Oak flooring planks">
+            <p id="product-type" class="eyebrow">Flooring</p>
+            <h2 id="product-title">Oak Flooring Pack</h2>
+            <p id="product-price" class="price">$45 / pack</p>
+          </article>
+          <form id="calc-form" class="calc-card card">
+            <h2>Room Calculator</h2>
+            <p id="product-note" class="hint" hidden></p>
+            <label>
+              Room Length
+              <input id="field-length" type="number" step="0.1" value="5">
+            </label>
+            <label>
+              Room Width
+              <input id="field-width" type="number" step="0.1" value="4">
+            </label>
+            <label>
+              <span id="coverage-label">Coverage per Pack</span>
+              <input id="field-coverage" value="2.5" readonly>
+            </label>
+            <p class="hint">Coverage is stored on the product. This box is display only.</p>
+            <div class="metrics">
+              <div>
+                <span>Required Area</span>
+                <strong id="result-area">—</strong>
+              </div>
+              <div>
+                <span id="packs-label">Required Packs</span>
+                <strong id="result-packs">—</strong>
+              </div>
+            </div>
+            <button type="button" id="btn-calculate">Calculate Quantity</button>
+            <p id="result-error" class="banner error" hidden></p>
+            <div id="result-need" hidden></div>
+            <p id="result-formula" class="formula" hidden></p>
+            <button type="button" id="btn-add">Add Calculated Items To Cart</button>
+          </form>
+        </div>
+      </section>
+
+      <section id="view-api" class="view" hidden>
+        <p class="lede">Quantity is computed on the server. A quantity or coverage posted by the browser is discarded.</p>
+        <div class="split">
+          <form id="api-form" class="card">
+            <h2>POST /api/calculator/add-to-cart</h2>
+            <label>
+              Request
+              <textarea id="api-request" rows="12" spellcheck="false"></textarea>
+            </label>
+            <div class="button-row">
+              <button type="submit">Send request</button>
+              <button type="button" id="api-tamper" class="secondary">Send tampered quantity</button>
+            </div>
+          </form>
+          <div class="card">
+            <h2>Response</h2>
+            <p id="api-status" class="hint">Send the request to see the server response.</p>
+            <pre id="api-response"></pre>
+            <p id="api-cart" class="hint"></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-cart" class="view" hidden>
+        <div class="card cart-card">
+          <h2>Cart</h2>
+          <div id="cart-empty" class="hint">The cart is empty. Add the calculated items from the product page.</div>
+          <div id="cart-body" hidden>
+            <div id="cart-lines"></div>
+            <div class="total">
+              <span>Total</span>
+              <strong id="cart-total">$0</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="view-settings" class="view" hidden>
+        <form id="settings-form" class="card form-grid">
+          <h2>Store</h2>
+          <div id="settings-stores" class="stack"></div>
+          <div class="enable-row">
+            <label class="check">
+              <input id="settings-enable" type="checkbox">
+              Enable Calculator
+            </label>
+            <p id="settings-status" class="status-yes">YES</p>
+          </div>
+          <p id="settings-message" class="banner" hidden></p>
+          <div class="button-row">
+            <button type="submit">Save Settings</button>
+            <button type="button" id="settings-reset" class="secondary">Reset demo data</button>
+          </div>
+        </form>
+      </section>
+
+      <section id="view-validation" class="view" hidden>
+        <p class="lede">The same add-to-cart endpoint rejects this input before it touches the cart.</p>
+        <form id="val-form" class="card form-grid narrow">
+          <h2>Input</h2>
+          <label>
+            Length
+            <input id="val-length" type="number" step="0.1" value="-5">
+          </label>
+          <label>
+            Width
+            <input id="val-width" type="number" step="0.1" value="0">
+          </label>
+          <button type="submit">Run validation</button>
+          <div id="val-result" class="banner error" hidden></div>
+          <pre id="val-raw"></pre>
+        </form>
+      </section>
+
+      <section id="view-architecture" class="view" hidden>
+        <div class="card arch">
+          <h2>Plugin Architecture</h2>
+          <ol class="layers">
+            <li><div>Product Page<small>Customer product view</small></div></li>
+            <li><div>Widget Component<small>Room calculator widget</small></div></li>
+            <li><div>Calculator Service<small>CalculatorService</small></div></li>
+            <li><div>Product Service<small>ProductService</small></div></li>
+            <li><div>Shopping Cart Service<small>ShoppingCartService</small></div></li>
+            <li><div>Database<small>Catalog, settings, and cart records</small></div></li>
+          </ol>
+          <ul class="principles">
+            <li>No core modification</li>
+            <li>Uses service layer</li>
+            <li>Supports multiple calculators</li>
+            <li>Secure server-side calculation</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="js/demo.js"></script>
+</body>
+</html>
